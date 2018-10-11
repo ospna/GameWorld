@@ -19,19 +19,31 @@ public class PlayerController : MonoBehaviour
     public Transform groundCheck;
     public LayerMask groundLayers;
 
+    public Rigidbody2D rb;
     private float groundCheckRadius = 0.2f;
 
 
     // Use this for initialization
     void Start ()
     {
-		
+        rb = GetComponent<Rigidbody2D>();
 	}
 	
 	// Update is called once per frame
 	void Update ()
     {
-		
+		if(Input.GetButtonDown("Jump"))
+        {
+            if (isGrounded == true)
+            {
+                this.rb.velocity = new Vector2(rb.velocity.x, 0);
+                this.rb.AddForce(new Vector2(0, jumpForce));
+            }
+            else
+            {
+                Debug.Log("jump pressed while not grounded");
+            }
+        }
 	}
 
     void FixedUpdate()
@@ -39,7 +51,9 @@ public class PlayerController : MonoBehaviour
         isGrounded = Physics2D.OverlapCircle(groundCheck.position, groundCheckRadius, groundLayers);
 
         float move = Input.GetAxis("Horizontal");
-        this.GetComponent<Rigidbody2D>().velocity = new Vector2(move * maxSpeed, GetComponent<Rigidbody2D>().velocity.y);
+        // float climb = Input.GetAxis("Vertical");
+
+        this.GetComponent<Rigidbody2D>().velocity = new Vector2(move * maxSpeed, rb.velocity.y);
 
         if((move > 0.0f && isFacingRight == false) || (move < 0.0f && isFacingRight == true))
         {
